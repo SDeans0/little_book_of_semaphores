@@ -31,4 +31,4 @@ jobs:
     - name: Test with pytest
       run: |
         conda install pytest
-        pytest ch_3/tests/
+        pytest chapters/ch_3/tests/
