@@ -1,6 +1,7 @@
 """Rendevous for n threads"""
 import threading
 
+
 class Rendezvous:
     def __init__(self, n_threads: int, mutex: threading.Semaphore) -> None:
         self.count = 0
@@ -40,7 +41,7 @@ def main(n_threads = 10):
         new_thread.start()
         threads.append(new_thread)
     
-    for thread  in threads:
+    for thread in threads:
         thread.join()
 
 if __name__ == "__main__":
