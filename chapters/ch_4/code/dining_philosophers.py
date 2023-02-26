@@ -3,10 +3,18 @@ import time
 import random
 
 class Philosopher:
-    def __init__(self,id_: int, mutex: threading.Semaphore, left_fork: threading.Semaphore, right_fork: threading.Semaphore):
+    def __init__(
+            self,
+            id_: int,
+            mutex: threading.Semaphore,
+            left_fork: threading.Semaphore,
+            right_fork: threading.Semaphore,
+            barrier = threading.Barrier,
+        ):
         self.mutex = mutex
         self.left_fork = left_fork
         self.right_fork = right_fork
+        self.barrier = barrier
         self.hungry: bool = False
         self.id = id_
     
@@ -33,6 +41,7 @@ class Philosopher:
             self.left_fork.release()
             self.right_fork.release()
             print(f"{self} is done eating")
+            self.barrier.wait()
         else:
             if l:
                 self.left_fork.release()
@@ -47,16 +56,17 @@ class Philosopher:
             else:
                 self.philosophise()
 
-def main(n_diners = 5):
+def main(n_diners = 3):
     mutex = threading.Semaphore(1)
+    barrier = threading.Barrier(n_diners)
     forks = [threading.Semaphore(1) for _ in range(n_diners)]
     diners = []
     for i in range(n_diners):
-        philosopher = Philosopher(i, mutex=mutex, left_fork=forks[i], right_fork=forks[(i+1) % n_diners])
+        philosopher = Philosopher(i, mutex=mutex, left_fork=forks[i], right_fork=forks[(i+1) % n_diners], barrier=barrier)
         diners.append(threading.Thread(target=philosopher.run))
     
     for d in diners:
-        d.start()
+        d.start() # No join since these are running infinite loops
 
 if __name__ == "__main__":
     main()
